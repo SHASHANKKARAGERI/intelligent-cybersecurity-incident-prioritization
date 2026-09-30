@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Suspicious PowerShell on admin workstation",
+    "category": "Execution",
+    "score_hint": 86
+  },
+  {
+    "title": "Repeated SSH password spraying",
+    "category": "Initial Access",
+    "score_hint": 71
+  },
+  {
+    "title": "Large outbound data transfer",
+    "category": "Exfiltration",
+    "score_hint": 93
+  }
+]

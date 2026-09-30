@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberPriority — AI Incident Triage</title>
+<style>
+:root{
+  --bg:#070b14; --panel:#0d1424; --panel2:#10192c; --border:#1e2b45;
+  --text:#e8eef9; --muted:#7f91ad; --cyan:#17d9ff; --green:#22e6a5;
+  --red:#ff4d5f; --orange:#ffad3d; --yellow:#f4d35e; --purple:#b47cff;
+}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 20% 0%,#101c35 0,#070b14 35%,#050810 100%);
+color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit} button{cursor:pointer}
+.top{height:82px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:#080e1aee;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
+.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border:1px solid #1bdcff;border-radius:12px;display:grid;place-items:center;color:var(--cyan);font-size:22px;box-shadow:0 0 22px #00c8ff20}.brand h1{font-size:19px;margin:0;letter-spacing:.5px}.brand h1 span{color:var(--cyan)}.sub{color:var(--muted);font-size:11px;margin-top:4px;letter-spacing:.4px}
+.actions{display:flex;gap:10px;align-items:center}.status{font-size:11px;color:var(--muted);padding:11px 14px;border:1px solid var(--border);border-radius:9px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);margin-right:7px}
+.btn{border:1px solid var(--border);background:#111b2e;color:#cbd7e9;border-radius:9px;padding:11px 15px}.btn:hover{border-color:#2d5878;background:#14233b}.btn.attack{background:#5d1721;border-color:#b93143;color:#fff}.btn.attack:hover{background:#7c1d2b}
+.wrap{padding:22px 24px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:linear-gradient(180deg,#0e1627,#0b1220);border:1px solid var(--border);border-radius:13px;box-shadow:0 12px 30px #00000022}.stat{padding:18px;min-height:112px;position:relative}.stat .label{font-size:10px;color:#8ca0bd;text-transform:uppercase;letter-spacing:1.1px}.stat .num{font-size:25px;font-weight:800;margin-top:10px}.stat .hint{font-size:11px;color:var(--green);margin-top:6px}.stat .icon{position:absolute;right:16px;top:27px;color:var(--cyan);border:1px solid #17435a;padding:9px;border-radius:10px}
+.toolbar{margin-top:18px;padding:13px;display:flex;gap:12px}.search{flex:1;background:#0a1120;border:1px solid var(--border);border-radius:9px;color:white;padding:12px 14px;outline:none}.search:focus{border-color:#1b92b0}.filters{display:flex;gap:5px}.filter{border:1px solid transparent;background:#101a2d;color:#8ea0bb;padding:9px 13px;border-radius:8px}.filter.active{color:white;border-color:#274463;background:#16263d}
+.main{display:grid;grid-template-columns:1.35fr .95fr;gap:18px;margin-top:16px}.list{display:flex;flex-direction:column;gap:12px}.incident{padding:18px;border:1px solid var(--border);background:linear-gradient(180deg,#0f1729,#0b1220);border-radius:13px;cursor:pointer;transition:.18s}.incident:hover,.incident.selected{border-color:#17d9ff88;box-shadow:0 0 0 1px #17d9ff22,0 10px 30px #0005;transform:translateY(-1px)}.row{display:flex;justify-content:space-between;gap:12px}.badge{font-size:10px;font-weight:800;padding:5px 8px;border-radius:5px;border:1px solid}.p1{color:#ff6876;background:#44131b;border-color:#85303c}.p2{color:#ffb45c;background:#402914;border-color:#845b2c}.p3{color:#f1db66;background:#403914;border-color:#75682b}.p4{color:#7fdaff;background:#112c3c;border-color:#22566d}.title{font-weight:700;font-size:15px;margin:13px 0 8px}.meta{font-size:11px;color:#8194af;display:flex;justify-content:space-between}.score{font-size:26px;font-weight:800}.score small{font-size:10px;color:#71839c;font-weight:500}.conf{color:var(--green)}
+.detail{padding:18px;min-height:600px;position:sticky;top:100px}.detail h2{font-size:14px;margin:0 0 18px}.detail .hero{display:flex;justify-content:space-between;align-items:flex-start}.bigscore{font-size:37px;font-weight:900;color:var(--red)}.bigscore small{font-size:12px;color:var(--muted);font-weight:500}.section{border-top:1px solid var(--border);margin-top:18px;padding-top:16px}.section-title{font-size:10px;color:#91a7c5;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}.factor{margin:10px 0}.factor-head{display:flex;justify-content:space-between;font-size:11px;color:#b7c5d9}.bar{height:7px;background:#172238;border-radius:10px;overflow:hidden;margin-top:6px}.fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#15bddf,#29e1bd)}.timeline{position:relative;padding-left:18px}.event{position:relative;padding:0 0 14px 14px;border-left:1px solid #29405d;color:#c5d1e2;font-size:11px}.event:before{content:"";position:absolute;width:7px;height:7px;background:var(--cyan);border-radius:50%;left:-4px;top:3px;box-shadow:0 0 8px #18dfff}.event span{display:block;color:#6e819d;font-size:9px;margin-bottom:4px}.reason{padding:12px;border:1px solid #183f51;background:#0a1723;border-radius:9px;color:#a9bfd2;font-size:11px;line-height:1.55}.reason b{color:white}.actions2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.actions2 button{background:#121e32;color:#cbd8ea;border:1px solid var(--border);padding:10px 7px;border-radius:8px;font-size:10px}.actions2 button:hover{border-color:var(--cyan)}
+.toast{position:fixed;right:22px;bottom:22px;background:#101b2d;border:1px solid #28415e;padding:13px 16px;border-radius:10px;display:none;z-index:10;box-shadow:0 12px 30px #0008}.toast.show{display:block}.empty{padding:30px;color:var(--muted);text-align:center}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.main{grid-template-columns:1fr}.detail{position:static}.top{height:auto;padding:15px;gap:10px}.actions .status{display:none}}
+@media(max-width:650px){.stats{grid-template-columns:1fr}.wrap{padding:12px}.toolbar{flex-direction:column}.filters{overflow:auto}.actions{display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div class="logo">◈</div><div><h1>CYBER<span>PRIORITY</span></h1><div class="sub">CONTEXTUAL RISK PRIORITIZATION & INCIDENT TRIAGE</div></div></div>
+  <div class="actions">
+    <div class="status"><span class="dot"></span>INGEST STREAM: <b style="color:#23e5aa">ACTIVE</b></div>
+    <button class="btn attack" id="simulate">⚡ SIMULATE ATTACK</button>
+    <button class="btn" onclick="location.reload()">↻ Refresh</button>
+  </div>
+</header>
+<div class="wrap">
+  <section class="stats">
+    <div class="card stat"><div class="label">Raw Telemetry Alerts</div><div class="num" id="raw">19,281</div><div class="hint">↓ 99.4% noise reduction</div><div class="icon">⌁</div></div>
+    <div class="card stat"><div class="label">Prioritized Incidents</div><div class="num" id="count">0</div><div class="hint" id="critHint">Loading...</div><div class="icon">!</div></div>
+    <div class="card stat"><div class="label">Mean Time To Triage</div><div class="num">1.8 <small style="font-size:12px;color:#7789a5">min</small></div><div class="hint">↓ from 42 mins</div><div class="icon">◷</div></div>
+    <div class="card stat"><div class="label">Automated Response</div><div class="num" id="actionsCount">28</div><div class="hint" style="color:#b47cff">Simulated playbooks</div><div class="icon">♢</div></div>
+  </section>
+  <section class="card toolbar">
+    <input class="search" id="search" placeholder="Filter by host, threat, category, user...">
+    <div class="filters">
+      <button class="filter active" data-p="ALL">ALL</button><button class="filter" data-p="P1">P1</button><button class="filter" data-p="P2">P2</button><button class="filter" data-p="P3">P3</button><button class="filter" data-p="P4">P4</button>
+    </div>
+  </section>
+  <main class="main">
+    <section class="list" id="list"></section>
+    <aside class="card detail" id="detail"><div class="empty">Select an incident to view its decision trace.</div></aside>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const API="http://127.0.0.1:8000/api";
+let incidents=[], selected=null, priority="ALL";
+const $=s=>document.querySelector(s);
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function cls(p){return p.toLowerCase()}
+async function load(){
+  try{
+    const r=await fetch(API+"/incidents"); incidents=await r.json(); updateStats(); render();
+    if(!selected && incidents[0]) select(incidents[0].id);
+  }catch(e){$("#list").innerHTML='<div class="empty">Backend is not running. Start FastAPI, then refresh this page.</div>'}
+}
+function updateStats(){
+  $("#count").textContent=incidents.length;
+  const c=incidents.filter(x=>x.priority==="P1").length;
+  $("#critHint").textContent=`${c} P1 Critical`;
+  $("#actionsCount").textContent=28+Math.max(0,incidents.length-4);
+}
+function render(){
+  const q=$("#search").value.toLowerCase();
+  const arr=incidents.filter(x=>(priority==="ALL"||x.priority===priority)&&
+    [x.title,x.category,x.host,x.user].join(" ").toLowerCase().includes(q));
+  $("#list").innerHTML=arr.length?arr.map(x=>`
+    <article class="incident ${selected===x.id?"selected":""}" onclick="select(${x.id})">
+      <div class="row"><div><span class="badge ${cls(x.priority)}">${x.priority} ${x.label}</span> <span style="font-size:10px;color:#8da0bb;margin-left:8px">${esc(x.category)}</span></div><div style="text-align:right"><div class="score">${x.score}<small>/100</small></div></div></div>
+      <div class="title">${esc(x.title)}</div>
+      <div class="meta"><span>▱ ${esc(x.host)} <span style="color:#526680">(${esc(x.asset_type)})</span></span><span class="conf">Conf: ${x.confidence}% &nbsp; <span style="color:#ff6c78">SLA: ${x.priority==="P1"?"14m":x.priority==="P2"?"30m":"90m"}</span></span></div>
+    </article>`).join(""):'<div class="empty">No incidents match the current filters.</div>';
+}
+async function select(id){
+  selected=id; render();
+  const x=incidents.find(i=>i.id===id); if(!x)return;
+  $("#detail").innerHTML=`
+    <div class="hero"><div><span class="badge ${cls(x.priority)}">${x.priority} ${x.label}</span><h2 style="margin-top:12px">${esc(x.title)}</h2><div style="font-size:10px;color:#7387a3">${esc(x.host)} · ${esc(x.asset_type)} · user: ${esc(x.user)}</div></div><div class="bigscore">${x.score}<small>/100</small></div></div>
+    <div class="section"><div class="section-title">Feature Importance & Scoring Breakdown</div>
+      ${factor("Threat Severity", x.score>=90?94:72)}
+      ${factor("Asset Criticality", x.score>=90?96:70)}
+      ${factor("User Privilege", x.score>=90?100:60)}
+      ${factor("Attack Confidence", x.confidence)}
+      ${factor("Business Impact", x.score>=90?94:65)}
+    </div>
+    <div class="section"><div class="section-title">Decision Trace</div><div class="reason"><b>Why this priority?</b><br><br>${x.factors.map(v=>"• "+esc(v)).join("<br>")}<br><br><b>Final contextual risk: ${x.score}/100</b></div></div>
+    <div class="section"><div class="section-title">Correlated Telemetry (${x.events.length})</div><div class="timeline">${x.events.map((e,i)=>`<div class="event"><span>EVENT ${String(i+1).padStart(2,"0")} · ${new Date().toLocaleTimeString()}</span>${esc(e)}</div>`).join("")}</div></div>
+    <div class="section"><div class="section-title">Automated Playbook & Remediation</div><div class="actions2">
+      <button onclick="action(${x.id},'isolate')">◈ Isolate Host</button><button onclick="action(${x.id},'block')">⊘ Block Source</button><button onclick="action(${x.id},'investigate')">✓ Investigate</button>
+    </div></div>`;
+}
+function factor(name,v){return `<div class="factor"><div class="factor-head"><span>${name}</span><b>${v}/100</b></div><div class="bar"><div class="fill" style="width:${v}%"></div></div></div>`}
+async function action(id,a){
+  try{const r=await fetch(`${API}/incidents/${id}/action?action=${a}`,{method:"POST"});const d=await r.json();toast(d.action_result);if(a==="close")load()}catch(e){toast("Action failed")}
+}
+$("#simulate").onclick=async()=>{try{const r=await fetch(API+"/simulate",{method:"POST"});const d=await r.json();toast("Synthetic attack correlated: "+d.score+"/100 "+d.priority);await load();select(d.id)}catch(e){toast("Start the backend first")}};
+$("#search").oninput=render;
+document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");priority=b.dataset.p;render()});
+load();
+</script>
+</body>
+</html>
