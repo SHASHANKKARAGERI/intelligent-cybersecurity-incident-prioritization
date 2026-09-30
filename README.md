@@ -35,15 +35,14 @@ Your dashboard will open in the browser.
 
 🔗 Backend/API addresses
 
-Main API:
+Local API:
 
 http://127.0.0.1:8000
 
-API documentation:
+Local API Documentation:
 
 http://127.0.0.1:8000/docs
-
-Use /docs when you want to test the backend APIs.
+> These URLs are for local development only. The backend runs on localhost and is not publicly accessible.
 
 🛑 When you want to stop the project
 
